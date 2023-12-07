@@ -7,7 +7,6 @@ public class Folder {
     public Folder(String path) {
         this.path = path;
     }
-
     public File[] readFile() {
         File fileDir = new File(this.path);
         return fileDir.listFiles(); // List of the files directory

@@ -21,8 +21,10 @@ public class Main {
         if (folder != null) {
             for (File file : folder) {
                 Runnable runnable = new MyRunnable(input, file);
-                Thread thread = new Thread(runnable); // create a new thread for each file
-                thread.start();
+                if (!MyRunnable.stopThreads()) {
+                    Thread thread = new Thread(runnable); // create a new thread for each file
+                    thread.start();
+                } else break;
             }
         } else {
             System.out.println("Directory is empty or does not exist.");

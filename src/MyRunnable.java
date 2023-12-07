@@ -8,11 +8,14 @@ import java.util.Scanner;
 public class MyRunnable implements Runnable {
     private final File file;
     private final String input;
-    private volatile boolean interruptflag;
+    private static volatile boolean interruptflag;
 
     public MyRunnable(String input, File file) {
         this.file = file;
         this.input = input;
+    }
+    public static void setInterruptflag(boolean value) {
+        interruptflag = value;
     }
     @Override
     public void run() {
@@ -21,11 +24,12 @@ public class MyRunnable implements Runnable {
             int lineNumber = 1;
             // System.out.println(Thread.currentThread());
             // System.out.println("Contents of file " + file.getName()+ ":");
-            while (myReader.hasNextLine()) { // while there is another line to read
+            while (myReader.hasNextLine() && !stopThreads()) { // while there is another line to read
                 String data = myReader.nextLine();
                 if (Objects.equals(data, this.input)) {
-                    System.out.println("Teacher exist in the file " + this.file.getName() + " at the line " + lineNumber + ".");
+                    System.out.println("Teacher exist in the file " + this.file.getName() + " at the line " + lineNumber + " pelo Thread " + Thread.currentThread().getName() + ".");
                     //System.out.println(Thread.currentThread().getName());
+                    setInterruptflag(true);
                 }
                 lineNumber++;
             }
@@ -33,5 +37,9 @@ public class MyRunnable implements Runnable {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred while reading " + this.file.getName());
         }
+        // System.out.println(interruptflag);
+    }
+    public static boolean stopThreads() {
+        return interruptflag;
     }
 }
