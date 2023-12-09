@@ -1,4 +1,4 @@
-package Files;
+package Queue;
 
 import java.io.File;
 import java.io.FileWriter;
