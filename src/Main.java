@@ -23,11 +23,12 @@ public class Main {
 
         List<String> allNames = new ArrayList<>(); // collection of items which every item is unique
         Set<String> duplicateNames = new HashSet<>();
-        Set<String> seenNames = new HashSet<>();
+
+        boolean nameFound = false;
 
         if (folder != null) {
             for (File file : folder) {
-                Runnable runnable = new MyRunnable(input, file, allNames, duplicateNames, seenNames);
+                Runnable runnable = new MyRunnable(input, file, allNames, duplicateNames, nameFound);
                 Thread thread = new Thread(runnable);
                 thread.start();
                 threads.add(thread);
@@ -46,8 +47,12 @@ public class Main {
         }
 
         if (threadsCount == threads.size()) {
-            fileDir.createFileTxt("duplicate.txt", duplicateNames);
-            fileDir.createFileTxt("Docentes.txt", allNames);
+            if (MyRunnable.isNameFound()) {
+            fileDir.createFileTxt("Duplicate.txt", duplicateNames);
+            fileDir.createFileTxt("Teachers.txt", allNames);
+            } else {
+                System.out.println("Teacher doesn't exist in the files");
+            }
         }
     }
 }
