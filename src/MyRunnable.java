@@ -2,44 +2,58 @@ package Files;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.Set;
 
 public class MyRunnable implements Runnable {
     private final File file;
     private final String input;
-    private static volatile boolean interruptflag;
+    private final List<String> uniqueName;
+    private final Set<String> duplicateName;
+    private final Set<String> seenNames;
 
-    public MyRunnable(String input, File file) {
+    public MyRunnable(String input, File file, List<String> allName, Set<String> duplicateNames, Set<String> seenNames) {
         this.file = file;
         this.input = input;
-    }
-    public static void setInterruptflag(boolean value) {
-        interruptflag = value;
+        this.uniqueName = allName;
+        this.duplicateName = duplicateNames;
+        this.seenNames = seenNames;
     }
     @Override
     public void run() {
         try {
             Scanner myReader = new Scanner(this.file);
-            int lineNumber = 1;
-            // System.out.println(Thread.currentThread());
-            // System.out.println("Contents of file " + file.getName()+ ":");
-            while (myReader.hasNextLine() && !stopThreads()) { // while there is another line to read
+            while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
-                if (Objects.equals(data, this.input)) {
-                    System.out.println("Teacher exist in the file " + this.file.getName() + " at the line " + lineNumber + " pelo Thread " + Thread.currentThread().getName() + ".");
-                    //System.out.println(Thread.currentThread().getName());
-                    setInterruptflag(true);
+                synchronized (seenNames) { // only 1 thread can execute this block of code at a time
+                    if (!seenNames.add(data)) { // If a name is already in the set, it's considered a duplicate
+                        synchronized (this.duplicateName) {
+                            duplicateName.add(data);
+                        }
+                    } else {
+                        synchronized (uniqueName) {
+                            uniqueName.add(data);
+                        }
+                    }
                 }
-                lineNumber++;
+               /* synchronized (uniqueName) {
+                    //System.out.println("Thread " + Thread.currentThread().getName() + " adding name: " + data);
+                    this.uniqueName.add(data);
+                }
+                if (Objects.equals(data, this.input)) {
+                    synchronized (this.duplicateName) { // only 1 thread can execute this block of code at a time
+                        //System.out.println("Thread " + Thread.currentThread().getName() + " found duplicate: " + this.input);
+                        if (!duplicateName.contains(this.input)) { // if the collection doesn't have the duplicated name
+                            duplicateName.add(data); // add the duplicate to the new Array
+                        }
+                    }
+                } */
             }
             myReader.close();
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred while reading " + this.file.getName());
         }
-        // System.out.println(interruptflag);
-    }
-    public static boolean stopThreads() {
-        return interruptflag;
     }
 }
