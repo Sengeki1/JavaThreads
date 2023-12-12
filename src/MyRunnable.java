@@ -1,4 +1,4 @@
-package Queue;
+package Files;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,13 +35,11 @@ public class MyRunnable implements Runnable {
                         this.uniqueName.add(data);
                     }
                 } else {
-                    System.out.println("Teacher was found in the file " + file.getName() + " at the line " + lineNumber);
+                    String name = "Teacher was found in the file " + file.getName() + " at the line " + lineNumber;
                     synchronized (this.duplicateName) { // only 1 thread can execute this block of code at a time
                         //System.out.println("Thread " + Thread.currentThread().getName() + " found duplicate: " + this.input);
-                        if (!duplicateName.contains(this.input)) { // if the collection doesn't have the duplicated name
-                            duplicateName.add(data); // add the duplicate to the new Array
-                            setIsNameFound(true);
-                        }
+                        duplicateName.add(name); // add the duplicate to the new Array
+                        setIsNameFound(true);
                     }
                 }
                 lineNumber++;

@@ -1,4 +1,4 @@
-package Queue;
+package Files;
 
 import java.io.File;
 import java.util.*;
@@ -40,7 +40,7 @@ public class Main {
         for (Thread thread : threads) { // check if all threads are done
             try {
                 thread.join();
-                 threadsCount++;
+                threadsCount++;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
