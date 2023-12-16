@@ -17,6 +17,7 @@ public class Main {
         teacherThread.start();
 
         List<Thread> threadList = new ArrayList<>();
+        List<Thread> threadList2 = new ArrayList<>();
         int countThread = 0;
         boolean flag = false;
 
@@ -39,21 +40,20 @@ public class Main {
             System.out.println("Alunos podem iniciar as provas");
         }
 
-        /*for (int i = 0; i < students; i++) {
+        for (int i = 0; i < students; i++) {
             Thread studentThread = new Thread(new StudentRunnable(i, examRoom, flag, rand, file));
             studentThread.start();
+            threadList2.add(studentThread);
         }
 
-        for (Thread thread : threadList) {
+        for (Thread thread : threadList2) {
             try {
                 thread.join();
-                countThread++;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }*/
-        if (countThread == threadList.size()) {
-            System.out.println("Todos os alunos já terminaram as suas respectivas provas.");
         }
+
+        System.out.println("Todos os alunos já terminaram as suas respectivas provas.");
     }
 }
