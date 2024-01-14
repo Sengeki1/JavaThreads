@@ -1,79 +1,47 @@
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.*;
-
-public class MyExecutor implements ExecutorService {
+public class MyExecutor implements MyExecutorService {
     private final List<Thread> threadList = new ArrayList<>();
-    public void newFixedThreadPool(int numThreads) {
+    public void ThreadPool(int numThreads, Runnable task) {
         for (int i = 0; i < numThreads; i++) {
-            Thread thread = new Thread();
+            Thread thread = new Thread(task);
             threadList.add(thread);
+        }
+    }
+
+    public void execute() {
+        for (Thread thread : threadList) {
+            thread.start();
         }
     }
 
     @Override
     public void shutdown() {
-        
-    }
-
-    @Override
-    public List<Runnable> shutdownNow() {
-        return null;
-    }
-
-    @Override
-    public boolean isShutdown() {
-        return false;
+        for (Thread thread : threadList) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
     public boolean isTerminated() {
-        return false;
+        List<Boolean> terminated = new ArrayList();
+        Boolean threadTerminated = false;
+        for (int i = 0; i < threadList.size(); i++) {
+            if (!(threadList.get(i).isAlive())) {
+                terminated.add(true);
+            } else {
+                terminated.add(false);
+            }
+        }
+        if (terminated.contains(false)) {
+            threadTerminated = false;
+        } else threadTerminated = true;
+
+        return threadTerminated;
     }
 
-    @Override
-    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return false;
-    }
-
-    @Override
-    public <T> Future<T> submit(Callable<T> task) {
-        return null;
-    }
-
-    @Override
-    public <T> Future<T> submit(Runnable task, T result) {
-        return null;
-    }
-
-    @Override
-    public Future<?> submit(Runnable task) {
-        return null;
-    }
-
-    @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return null;
-    }
-
-    @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
-        return null;
-    }
-
-    @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        return null;
-    }
-
-    @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return null;
-    }
-
-    @Override
-    public void execute(Runnable command) {
-
-    }
 }
